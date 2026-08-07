@@ -20,6 +20,7 @@ import { Badge } from '@/components/ui/Badge'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { MarketTicker } from '@/components/market/MarketTicker'
+import { MarketData } from '@/components/tradingview/MarketData'
 import { AnimatedSection } from '@/components/animations/AnimatedSection'
 import { ParticleBackground } from '@/components/animations/ParticleBackground'
 
@@ -69,7 +70,7 @@ export function HomeScreen() {
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent pointer-events-none" />
         
         <div className="container relative mx-auto px-4 py-32">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-12 items-start">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -97,7 +98,7 @@ export function HomeScreen() {
                   <ChevronRight className="ml-2 h-4 w-4" />
                 </Button>
               </div>
-              <div className="flex items-center gap-8 mt-8">
+              <div className="flex items-center gap-8 mt-8 flex-wrap">
                 {stats.map((stat, index) => (
                   <motion.div
                     key={stat.label}
@@ -121,33 +122,10 @@ export function HomeScreen() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="relative"
+              className="relative w-full"
             >
               <div className="absolute -inset-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl blur-3xl opacity-20" />
-              <div className="relative bg-card rounded-2xl border border-border/50 p-8 backdrop-blur-sm">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="font-semibold">Market Overview</h3>
-                  <Badge variant="success">Live</Badge>
-                </div>
-                <div className="space-y-4">
-                  {[
-                    { symbol: 'AAPL', price: '$198.45', change: '+2.4%', positive: true },
-                    { symbol: 'GOOGL', price: '$173.20', change: '+1.8%', positive: true },
-                    { symbol: 'MSFT', price: '$378.90', change: '-0.3%', positive: false },
-                    { symbol: 'AMZN', price: '$186.50', change: '+3.1%', positive: true },
-                  ].map((stock) => (
-                    <div key={stock.symbol} className="flex items-center justify-between p-3 rounded-lg bg-accent/50">
-                      <div>
-                        <div className="font-semibold">{stock.symbol}</div>
-                        <div className="text-sm text-muted-foreground">{stock.price}</div>
-                      </div>
-                      <Badge variant={stock.positive ? 'success' : 'destructive'}>
-                        {stock.change}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <MarketData className="max-h-150 relative bg-card rounded-2xl border border-border/50 backdrop-blur-sm" />
             </motion.div>
           </div>
         </div>
