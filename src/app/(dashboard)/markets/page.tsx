@@ -17,49 +17,49 @@ import { AnimatedSection } from '@/components/animations/AnimatedSection'
 
 // Countries sorted by GDP (nominal) from highest to lowest with their stock market symbols
 const countryData = [
-  { country: 'United States', symbol: 'SPX', gdp: 26960 },
-  { country: 'China', symbol: '000001.SS', gdp: 17963 },
-  { country: 'Japan', symbol: 'N225', gdp: 4210 },
-  { country: 'Germany', symbol: 'DAX', gdp: 4456 },
-  { country: 'India', symbol: 'NSEI', gdp: 3730 },
-  { country: 'United Kingdom', symbol: 'FTSE', gdp: 3332 },
-  { country: 'France', symbol: 'FCHI', gdp: 3030 },
-  { country: 'Italy', symbol: 'FTMIB', gdp: 2255 },
-  { country: 'Brazil', symbol: 'BVSP', gdp: 2173 },
-  { country: 'Canada', symbol: 'GSPTSE', gdp: 2140 },
-  { country: 'Russia', symbol: 'IMOEX', gdp: 2021 },
-  { country: 'Mexico', symbol: 'MXX', gdp: 1811 },
-  { country: 'South Korea', symbol: 'KOSPI', gdp: 1709 },
-  { country: 'Australia', symbol: 'AXJO', gdp: 1688 },
-  { country: 'Spain', symbol: 'IBEX', gdp: 1580 },
-  { country: 'Indonesia', symbol: 'JKSE', gdp: 1417 },
-  { country: 'Turkey', symbol: 'XU100', gdp: 1108 },
-  { country: 'Saudi Arabia', symbol: 'TASI', gdp: 1069 },
-  { country: 'Netherlands', symbol: 'AEX', gdp: 1055 },
-  { country: 'Switzerland', symbol: 'SSMI', gdp: 884 },
-  { country: 'Poland', symbol: 'WIG20', gdp: 842 },
-  { country: 'Argentina', symbol: 'MERV', gdp: 801 },
-  { country: 'Belgium', symbol: 'BEL20', gdp: 630 },
-  { country: 'Sweden', symbol: 'OMX', gdp: 593 },
-  { country: 'Ireland', symbol: 'ISEQ', gdp: 589 },
-  { country: 'Austria', symbol: 'ATX', gdp: 527 },
-  { country: 'Singapore', symbol: 'STI', gdp: 525 },
-  { country: 'Israel', symbol: 'TA125', gdp: 522 },
-  { country: 'Norway', symbol: 'OSEAX', gdp: 506 },
-  { country: 'United Arab Emirates', symbol: 'DFMGI', gdp: 504 },
-  { country: 'Thailand', symbol: 'SET', gdp: 502 },
-  { country: 'Bangladesh', symbol: 'DSEX', gdp: 460 },
-  { country: 'Malaysia', symbol: 'KLSE', gdp: 445 },
-  { country: 'Vietnam', symbol: 'VNINDEX', gdp: 433 },
-  { country: 'South Africa', symbol: 'JALSH', gdp: 399 },
-  { country: 'Hong Kong', symbol: 'HSI', gdp: 383 },
-  { country: 'Denmark', symbol: 'OMXC20', gdp: 382 },
-  { country: 'Philippines', symbol: 'PSEI', gdp: 372 },
-  { country: 'Egypt', symbol: 'EGX30', gdp: 347 },
-  { country: 'Chile', symbol: 'IPSA', gdp: 340 },
-  { country: 'Finland', symbol: 'OMXH25', gdp: 308 },
-  { country: 'Pakistan', symbol: 'KSE100', gdp: 303 },
-  { country: 'Colombia', symbol: 'COLCAP', gdp: 290 },
+  { country: 'United States', symbol: 'SPX', gdp: 26960, exchange: 'NASDAQ' },
+  { country: 'China', symbol: '000001.SS', gdp: 17963, exchange: 'SSE' },
+  { country: 'Japan', symbol: 'N225', gdp: 4210, exchange: 'TSE' },
+  { country: 'Germany', symbol: 'DAX', gdp: 4456, exchange: 'FSE' },
+  { country: 'India', symbol: 'NSEI', gdp: 3730, exchange: 'NSE' },
+  { country: 'United Kingdom', symbol: 'FTSE', gdp: 3332, exchange: 'LSE' },
+  { country: 'France', symbol: 'FCHI', gdp: 3030, exchange: 'EURONEXT' },
+  { country: 'Italy', symbol: 'FTMIB', gdp: 2255, exchange: 'BORSA' },
+  { country: 'Brazil', symbol: 'BVSP', gdp: 2173, exchange: 'B3' },
+  { country: 'Canada', symbol: 'GSPTSE', gdp: 2140, exchange: 'TSX' },
+  { country: 'Russia', symbol: 'IMOEX', gdp: 2021, exchange: 'MOEX' },
+  { country: 'Mexico', symbol: 'MXX', gdp: 1811, exchange: 'BMV' },
+  { country: 'South Korea', symbol: 'KOSPI', gdp: 1709, exchange: 'KRX' },
+  { country: 'Australia', symbol: 'AXJO', gdp: 1688, exchange: 'ASX' },
+  { country: 'Spain', symbol: 'IBEX', gdp: 1580, exchange: 'BME' },
+  { country: 'Indonesia', symbol: 'JKSE', gdp: 1417, exchange: 'IDX' },
+  { country: 'Turkey', symbol: 'XU100', gdp: 1108, exchange: 'BIST' },
+  { country: 'Saudi Arabia', symbol: 'TASI', gdp: 1069, exchange: 'TADAWUL' },
+  { country: 'Netherlands', symbol: 'AEX', gdp: 1055, exchange: 'EURONEXT' },
+  { country: 'Switzerland', symbol: 'SSMI', gdp: 884, exchange: 'SIX' },
+  { country: 'Poland', symbol: 'WIG20', gdp: 842, exchange: 'WSE' },
+  { country: 'Argentina', symbol: 'MERV', gdp: 801, exchange: 'BCBA' },
+  { country: 'Belgium', symbol: 'BEL20', gdp: 630, exchange: 'EURONEXT' },
+  { country: 'Sweden', symbol: 'OMX', gdp: 593, exchange: 'OMX' },
+  { country: 'Ireland', symbol: 'ISEQ', gdp: 589, exchange: 'ISE' },
+  { country: 'Austria', symbol: 'ATX', gdp: 527, exchange: 'VIE' },
+  { country: 'Singapore', symbol: 'STI', gdp: 525, exchange: 'SGX' },
+  { country: 'Israel', symbol: 'TA125', gdp: 522, exchange: 'TASE' },
+  { country: 'Norway', symbol: 'OSEAX', gdp: 506, exchange: 'OSE' },
+  { country: 'United Arab Emirates', symbol: 'DFMGI', gdp: 504, exchange: 'DFM' },
+  { country: 'Thailand', symbol: 'SET', gdp: 502, exchange: 'SET' },
+  { country: 'Bangladesh', symbol: 'DSEX', gdp: 460, exchange: 'DSE' },
+  { country: 'Malaysia', symbol: 'KLSE', gdp: 445, exchange: 'BURSA' },
+  { country: 'Vietnam', symbol: 'VNINDEX', gdp: 433, exchange: 'HOSE' },
+  { country: 'South Africa', symbol: 'JALSH', gdp: 399, exchange: 'JSE' },
+  { country: 'Hong Kong', symbol: 'HSI', gdp: 383, exchange: 'HKEX' },
+  { country: 'Denmark', symbol: 'OMXC20', gdp: 382, exchange: 'OMX' },
+  { country: 'Philippines', symbol: 'PSEI', gdp: 372, exchange: 'PSE' },
+  { country: 'Egypt', symbol: 'EGX30', gdp: 347, exchange: 'EGX' },
+  { country: 'Chile', symbol: 'IPSA', gdp: 340, exchange: 'BCS' },
+  { country: 'Finland', symbol: 'OMXH25', gdp: 308, exchange: 'OMX' },
+  { country: 'Pakistan', symbol: 'KSE100', gdp: 303, exchange: 'PSX' },
+  { country: 'Colombia', symbol: 'COLCAP', gdp: 290, exchange: 'BVC' },
 ]
 
 export default function MarketsPage() {
@@ -79,9 +79,11 @@ export default function MarketsPage() {
       return 0
     })
 
-  const handleCountryClick = (symbol: string) => {
-    // Navigate to screener page with the symbol as a query parameter
-    router.push(`/screener?symbol=${encodeURIComponent(symbol)}`)
+  const handleCountryClick = (country: typeof countryData[0]) => {
+    // Navigate to dashboard with country data as parameters
+    router.push(
+      `/dashboard?country=${encodeURIComponent(country.country)}&symbol=${encodeURIComponent(country.symbol)}&exchange=${encodeURIComponent(country.exchange)}`
+    )
   }
 
   return (
@@ -152,7 +154,7 @@ export default function MarketsPage() {
           <AnimatedSection key={item.country} delay={index * 0.03}>
             <Card 
               className="hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 cursor-pointer"
-              onClick={() => handleCountryClick(item.symbol)}
+              onClick={() => handleCountryClick(item)}
             >
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
@@ -173,12 +175,16 @@ export default function MarketsPage() {
                       <div className="font-medium text-primary">{item.symbol}</div>
                     </div>
                     <div className="text-right hidden sm:block">
+                      <div className="text-sm text-muted-foreground">Exchange</div>
+                      <div className="font-medium">{item.exchange}</div>
+                    </div>
+                    <div className="text-right hidden sm:block">
                       <div className="text-sm text-muted-foreground">GDP Rank</div>
                       <div className="font-medium">#{index + 1}</div>
                     </div>
                     <Button variant="outline" size="sm" onClick={(e) => {
                       e.stopPropagation()
-                      handleCountryClick(item.symbol)
+                      handleCountryClick(item)
                     }}>
                       View Details
                     </Button>

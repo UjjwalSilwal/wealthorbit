@@ -40,23 +40,43 @@ export default function ScreenerPage() {
   const [sortBy, setSortBy] = useState<'price' | 'change' | 'volume' | 'marketCap'>('change')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
   const [selectedStock, setSelectedStock] = useState(marketData[0])
+  const [customSymbol, setCustomSymbol] = useState<string | null>(null)
 
   // Update selected stock if symbol is provided in URL
   useEffect(() => {
     if (symbolFromUrl) {
-      // Try to find matching stock
+      console.log('📊 Symbol from URL:', symbolFromUrl)
+      
+      const decodedSymbol = decodeURIComponent(symbolFromUrl)
+      console.log('📊 Decoded symbol:', decodedSymbol)
+      
       const matchedStock = marketData.find(
-        stock => stock.symbol === symbolFromUrl || 
-                 `${stock.exchange}:${stock.symbol}` === symbolFromUrl
+        stock => stock.symbol === decodedSymbol || 
+                 `${stock.exchange}:${stock.symbol}` === decodedSymbol ||
+                 stock.symbol === decodedSymbol.split(':')[1]
       )
       
       if (matchedStock) {
+        console.log('✅ Found matching stock:', matchedStock.symbol)
         setSelectedStock(matchedStock)
+        setCustomSymbol(null)
         setSearchTerm('')
       } else {
-        // If no match found, you could set a custom symbol for indices
-        // For now, we'll keep the first item
-        console.log(`No matching stock found for symbol: ${symbolFromUrl}`)
+        console.log('🔧 Creating custom entry for symbol:', decodedSymbol)
+        const parts = decodedSymbol.split(':')
+        const exchange = parts.length > 1 ? parts[0] : 'Unknown'
+        const symbol = parts.length > 1 ? parts[1] : decodedSymbol
+        
+        setCustomSymbol(decodedSymbol)
+        setSelectedStock({
+          symbol: symbol,
+          exchange: exchange,
+          name: `${symbol} (${exchange})`,
+          price: 0,
+          change: 0,
+          volume: 'N/A',
+          marketCap: 'N/A'
+        })
       }
     }
   }, [symbolFromUrl])
@@ -75,15 +95,27 @@ export default function ScreenerPage() {
     })
 
   // Construct the full symbol with exchange
-  const fullSymbol = `${selectedStock.exchange}:${selectedStock.symbol}`
+  const fullSymbol = customSymbol || `${selectedStock.exchange}:${selectedStock.symbol}`
+
+  // Generate a unique key for each widget based on the symbol
+  const widgetKey = fullSymbol.replace(/[^a-zA-Z0-9]/g, '_')
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold">Markets</h1>
-          <p className="text-muted-foreground">Real-time market data and analysis</p>
+          <h1 className="text-3xl font-bold">
+            Markets
+            {customSymbol && (
+              <span className="text-lg font-normal text-muted-foreground ml-3">
+                {customSymbol}
+              </span>
+            )}
+          </h1>
+          <p className="text-muted-foreground">
+            {customSymbol ? `Viewing details for ${customSymbol}` : 'Real-time market data and analysis'}
+          </p>
         </div>
         <div className="flex items-center gap-4 mt-4 md:mt-0">
           <Badge className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
@@ -103,19 +135,21 @@ export default function ScreenerPage() {
         <Card className="overflow-hidden border border-border/50 shadow-md">
           <CardContent className="p-4 sm:p-6 bg-card">
             <div className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Selected Symbol Analysis
+              {customSymbol ? `${customSymbol} Analysis` : 'Selected Symbol Analysis'}
             </div>
-            <TradingViewSymbol symbol={fullSymbol} />
+            {/* Add key to force re-render when symbol changes */}
+            <TradingViewSymbol key={`symbol-${widgetKey}`} symbol={fullSymbol} />
           </CardContent>
         </Card>
 
-        {/* Company Profile */}
+        {/* Company Profile - FIX: Add key prop */}
         <Card className="overflow-hidden border border-border/50 shadow-md">
           <CardContent className="p-4 sm:p-6 bg-card">
             <div className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Company Profile - {selectedStock.symbol}
             </div>
             <TradingViewCompanyProfile 
+              key={`profile-${widgetKey}`}
               symbol={fullSymbol}
               height={350}
               colorTheme="light"
@@ -130,6 +164,7 @@ export default function ScreenerPage() {
               Advanced Chart - {selectedStock.symbol}
             </div>
             <TradingViewWidget 
+              key={`chart-${widgetKey}`}
               symbol={fullSymbol}
               theme="dark"
               height={500}
@@ -149,6 +184,7 @@ export default function ScreenerPage() {
                 Financial Fundamentals - {selectedStock.symbol}
               </div>
               <TradingViewFundamental 
+                key={`fundamental-${widgetKey}`}
                 symbol={fullSymbol}
                 theme="dark"
                 displayMode="regular"
@@ -165,6 +201,7 @@ export default function ScreenerPage() {
                 Technical Analysis - {selectedStock.symbol}
               </div>
               <TradingViewTechnical 
+                key={`technical-${widgetKey}`}
                 symbol={fullSymbol}
                 colorTheme="dark"
                 height={550}
@@ -214,7 +251,10 @@ export default function ScreenerPage() {
           return (
             <AnimatedSection key={item.symbol} delay={index * 0.03}>
               <Card 
-                onClick={() => setSelectedStock(item)}
+                onClick={() => {
+                  setSelectedStock(item)
+                  setCustomSymbol(null)
+                }}
                 className={`hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 cursor-pointer border ${
                   isSelected ? 'border-primary ring-1 ring-primary/50 bg-accent/40' : 'border-border/60'
                 }`}
@@ -263,6 +303,16 @@ export default function ScreenerPage() {
           )
         })}
       </div>
+
+      {/* Show custom symbol info if present */}
+      {customSymbol && (
+        <div className="mt-6 p-4 bg-muted/30 rounded-lg border border-border/50">
+          <p className="text-sm text-muted-foreground">
+            <span className="font-medium">Note:</span> Showing custom symbol {customSymbol}. 
+            This symbol was not found in the predefined list.
+          </p>
+        </div>
+      )}
     </div>
   )
 }

@@ -1,15 +1,17 @@
 'use client'
 
-import { useState } from 'react'
-import { 
-  TrendingUp, 
-  DollarSign, 
+import { useState, useEffect } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
+import {
+  TrendingUp,
+  DollarSign,
   BarChart3,
   Activity,
   Wallet,
   RefreshCw,
   Eye,
   Clock,
+  ArrowLeft,
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
@@ -18,6 +20,7 @@ import { StockChart } from '@/components/market/StockChart'
 import { Watchlist } from '@/components/market/Watchlist'
 import { NewsFeed } from '@/components/market/NewsFeed'
 import { AnimatedSection } from '@/components/animations/AnimatedSection'
+import TradingViewScreener from '@/components/tradingview/TradingViewScreener'
 
 const stats = [
   {
@@ -51,12 +54,37 @@ const stats = [
 ]
 
 export function DashboardScreen() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const [selectedTimeframe, setSelectedTimeframe] = useState('1D')
   const [isRefreshing, setIsRefreshing] = useState(false)
+  const [selectedMarket, setSelectedMarket] = useState<'forex' | 'stock' | 'crypto' | 'index' | 'futures'>('stock')
+
+  // Get country data from URL
+  const countryName = searchParams.get('country') || ''
+  const countrySymbol = searchParams.get('symbol') || 'SPX'
+  const countryExchange = searchParams.get('exchange') || 'NASDAQ'
 
   const handleRefresh = () => {
     setIsRefreshing(true)
     setTimeout(() => setIsRefreshing(false), 2000)
+  }
+
+  const handleBack = () => {
+    router.push('/markets')
+  }
+
+  // Handle symbol click - navigate to screener page with symbol
+  const handleSymbolClick = (symbol: string) => {
+    // Construct the full symbol with exchange if needed
+    const fullSymbol = `${countryExchange}:${symbol}`
+    router.push(`/screener?symbol=${encodeURIComponent(fullSymbol)}`)
+  }
+
+  // Handle "View Details" click on the screener widget items
+  const handleViewDetails = (symbol: string) => {
+    const fullSymbol = `${countryExchange}:${symbol}`
+    router.push(`/screener?symbol=${encodeURIComponent(fullSymbol)}`)
   }
 
   return (
@@ -64,8 +92,28 @@ export function DashboardScreen() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold">Dashboard</h1>
-          <p className="text-muted-foreground">Welcome back, John! Here&apos;s your portfolio overview.</p>
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleBack}
+              className="mb-2"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Countries
+            </Button>
+          </div>
+          <h1 className="text-3xl font-bold">
+            {countryName || 'Dashboard'}
+            {countrySymbol && (
+              <span className="text-lg font-normal text-muted-foreground ml-3">
+                ({countrySymbol} · {countryExchange})
+              </span>
+            )}
+          </h1>
+          <p className="text-muted-foreground">
+            {countryName ? `Market overview for ${countryName}` : 'Welcome back, John! Here\'s your portfolio overview.'}
+          </p>
         </div>
         <div className="flex items-center gap-4 mt-4 md:mt-0">
           <Button
@@ -82,6 +130,41 @@ export function DashboardScreen() {
             Live
           </Badge>
         </div>
+      </div>
+
+      {/* TradingView Screener - Shows companies from the selected country */}
+      <div className="mb-8">
+        <Card className="overflow-hidden border border-border/50 shadow-md">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>
+              {countryName ? `${countryName} Market Screener` : 'Market Screener'}
+            </CardTitle>
+            <div className="flex gap-2">
+              {['stock', 'forex', 'crypto', 'index', 'futures'].map((market) => (
+                <Button
+                  key={market}
+                  variant={selectedMarket === market ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setSelectedMarket(market as typeof selectedMarket)}
+                >
+                  {market.charAt(0).toUpperCase() + market.slice(1)}
+                </Button>
+              ))}
+            </div>
+          </CardHeader>
+          <CardContent className="p-0">
+            <TradingViewScreener
+              market={selectedMarket}
+              colorTheme="dark"
+              height={500}
+              showToolbar={true}
+              symbol={countrySymbol}
+              exchange={countryExchange}
+              country={countryName}
+              onSymbolClick={handleSymbolClick}  // Pass the click handler
+            />
+          </CardContent>
+        </Card>
       </div>
 
       {/* Stats Grid */}
@@ -111,7 +194,9 @@ export function DashboardScreen() {
         <div className="lg:col-span-2">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>Portfolio Performance</CardTitle>
+              <CardTitle>
+                {countryName ? `${countryName} Market Performance` : 'Portfolio Performance'}
+              </CardTitle>
               <div className="flex gap-2">
                 {['1D', '1W', '1M', '3M', '1Y'].map((time) => (
                   <Button
@@ -139,7 +224,9 @@ export function DashboardScreen() {
       <div className="grid lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Market News</CardTitle>
+            <CardTitle>
+              {countryName ? `${countryName} Market News` : 'Market News'}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <NewsFeed limit={5} />
