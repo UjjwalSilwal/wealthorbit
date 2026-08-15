@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { 
   Search, 
   Filter,
@@ -14,41 +15,81 @@ import { Input } from '@/components/ui/Input'
 import { Badge } from '@/components/ui/Badge'
 import { AnimatedSection } from '@/components/animations/AnimatedSection'
 
-const marketData = [
-  { symbol: 'AAPL', name: 'Apple Inc.', price: 198.45, change: 2.4, volume: '45.6M', marketCap: '3.1T' },
-  { symbol: 'GOOGL', name: 'Alphabet Inc.', price: 173.20, change: 1.8, volume: '28.3M', marketCap: '2.2T' },
-  { symbol: 'MSFT', name: 'Microsoft Corp.', price: 378.90, change: -0.3, volume: '32.1M', marketCap: '2.8T' },
-  { symbol: 'AMZN', name: 'Amazon.com Inc.', price: 186.50, change: 3.1, volume: '38.9M', marketCap: '1.9T' },
-  { symbol: 'TSLA', name: 'Tesla Inc.', price: 265.30, change: -1.2, volume: '52.4M', marketCap: '842B' },
-  { symbol: 'META', name: 'Meta Platforms', price: 365.80, change: 2.7, volume: '22.7M', marketCap: '938B' },
-  { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 825.20, change: 4.5, volume: '41.2M', marketCap: '2.0T' },
-  { symbol: 'JPM', name: 'JPMorgan Chase', price: 159.40, change: 1.1, volume: '18.5M', marketCap: '467B' },
+// Countries sorted by GDP (nominal) from highest to lowest with their stock market symbols
+const countryData = [
+  { country: 'United States', symbol: 'SPX', gdp: 26960 },
+  { country: 'China', symbol: '000001.SS', gdp: 17963 },
+  { country: 'Japan', symbol: 'N225', gdp: 4210 },
+  { country: 'Germany', symbol: 'DAX', gdp: 4456 },
+  { country: 'India', symbol: 'NSEI', gdp: 3730 },
+  { country: 'United Kingdom', symbol: 'FTSE', gdp: 3332 },
+  { country: 'France', symbol: 'FCHI', gdp: 3030 },
+  { country: 'Italy', symbol: 'FTMIB', gdp: 2255 },
+  { country: 'Brazil', symbol: 'BVSP', gdp: 2173 },
+  { country: 'Canada', symbol: 'GSPTSE', gdp: 2140 },
+  { country: 'Russia', symbol: 'IMOEX', gdp: 2021 },
+  { country: 'Mexico', symbol: 'MXX', gdp: 1811 },
+  { country: 'South Korea', symbol: 'KOSPI', gdp: 1709 },
+  { country: 'Australia', symbol: 'AXJO', gdp: 1688 },
+  { country: 'Spain', symbol: 'IBEX', gdp: 1580 },
+  { country: 'Indonesia', symbol: 'JKSE', gdp: 1417 },
+  { country: 'Turkey', symbol: 'XU100', gdp: 1108 },
+  { country: 'Saudi Arabia', symbol: 'TASI', gdp: 1069 },
+  { country: 'Netherlands', symbol: 'AEX', gdp: 1055 },
+  { country: 'Switzerland', symbol: 'SSMI', gdp: 884 },
+  { country: 'Poland', symbol: 'WIG20', gdp: 842 },
+  { country: 'Argentina', symbol: 'MERV', gdp: 801 },
+  { country: 'Belgium', symbol: 'BEL20', gdp: 630 },
+  { country: 'Sweden', symbol: 'OMX', gdp: 593 },
+  { country: 'Ireland', symbol: 'ISEQ', gdp: 589 },
+  { country: 'Austria', symbol: 'ATX', gdp: 527 },
+  { country: 'Singapore', symbol: 'STI', gdp: 525 },
+  { country: 'Israel', symbol: 'TA125', gdp: 522 },
+  { country: 'Norway', symbol: 'OSEAX', gdp: 506 },
+  { country: 'United Arab Emirates', symbol: 'DFMGI', gdp: 504 },
+  { country: 'Thailand', symbol: 'SET', gdp: 502 },
+  { country: 'Bangladesh', symbol: 'DSEX', gdp: 460 },
+  { country: 'Malaysia', symbol: 'KLSE', gdp: 445 },
+  { country: 'Vietnam', symbol: 'VNINDEX', gdp: 433 },
+  { country: 'South Africa', symbol: 'JALSH', gdp: 399 },
+  { country: 'Hong Kong', symbol: 'HSI', gdp: 383 },
+  { country: 'Denmark', symbol: 'OMXC20', gdp: 382 },
+  { country: 'Philippines', symbol: 'PSEI', gdp: 372 },
+  { country: 'Egypt', symbol: 'EGX30', gdp: 347 },
+  { country: 'Chile', symbol: 'IPSA', gdp: 340 },
+  { country: 'Finland', symbol: 'OMXH25', gdp: 308 },
+  { country: 'Pakistan', symbol: 'KSE100', gdp: 303 },
+  { country: 'Colombia', symbol: 'COLCAP', gdp: 290 },
 ]
 
 export default function MarketsPage() {
+  const router = useRouter()
   const [searchTerm, setSearchTerm] = useState('')
-  const [sortBy, setSortBy] = useState<'price' | 'change' | 'volume' | 'marketCap'>('change')
+  const [sortBy, setSortBy] = useState<'country' | 'gdp'>('gdp')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
 
-  const filteredData = marketData
+  const filteredData = countryData
     .filter(item => 
-      item.symbol.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.name.toLowerCase().includes(searchTerm.toLowerCase())
+      item.country.toLowerCase().includes(searchTerm.toLowerCase())
     )
     .sort((a, b) => {
       const order = sortOrder === 'asc' ? 1 : -1
-      if (sortBy === 'price') return (a.price - b.price) * order
-      if (sortBy === 'change') return (a.change - b.change) * order
-      if (sortBy === 'volume') return parseFloat(a.volume) - parseFloat(b.volume) * order
+      if (sortBy === 'country') return a.country.localeCompare(b.country) * order
+      if (sortBy === 'gdp') return (a.gdp - b.gdp) * order
       return 0
     })
+
+  const handleCountryClick = (symbol: string) => {
+    // Navigate to screener page with the symbol as a query parameter
+    router.push(`/screener?symbol=${encodeURIComponent(symbol)}`)
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold">Markets</h1>
-          <p className="text-muted-foreground">Real-time market data and analysis</p>
+          <h1 className="text-3xl font-bold">Countries</h1>
+          <p className="text-muted-foreground">Countries sorted by GDP (nominal)</p>
         </div>
         <div className="flex items-center gap-4 mt-4 md:mt-0">
           <Badge className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
@@ -66,66 +107,80 @@ export default function MarketsPage() {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search stocks..."
+            placeholder="Search countries..."
             className="pl-9"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         <div className="flex gap-2">
-          {(['price', 'change', 'volume'] as const).map((field) => (
-            <Button
-              key={field}
-              variant={sortBy === field ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => {
-                if (sortBy === field) {
-                  setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
-                } else {
-                  setSortBy(field)
-                  setSortOrder('desc')
-                }
-              }}
-            >
-              {field.charAt(0).toUpperCase() + field.slice(1)}
-              <ArrowUpDown className="ml-2 h-3 w-3" />
-            </Button>
-          ))}
+          <Button
+            variant={sortBy === 'country' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => {
+              if (sortBy === 'country') {
+                setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
+              } else {
+                setSortBy('country')
+                setSortOrder('asc')
+              }
+            }}
+          >
+            Country
+            <ArrowUpDown className="ml-2 h-3 w-3" />
+          </Button>
+          <Button
+            variant={sortBy === 'gdp' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => {
+              if (sortBy === 'gdp') {
+                setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
+              } else {
+                setSortBy('gdp')
+                setSortOrder('desc')
+              }
+            }}
+          >
+            GDP
+            <ArrowUpDown className="ml-2 h-3 w-3" />
+          </Button>
         </div>
       </div>
 
       <div className="space-y-3">
         {filteredData.map((item, index) => (
-          <AnimatedSection key={item.symbol} delay={index * 0.03}>
-            <Card className="hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 cursor-pointer">
+          <AnimatedSection key={item.country} delay={index * 0.03}>
+            <Card 
+              className="hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 cursor-pointer"
+              onClick={() => handleCountryClick(item.symbol)}
+            >
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
                       <Star className="h-4 w-4 text-muted-foreground hover:text-yellow-500 transition-colors" />
                       <div>
-                        <div className="font-semibold">{item.symbol}</div>
-                        <div className="text-sm text-muted-foreground">{item.name}</div>
+                        <div className="font-semibold">{item.country}</div>
+                        <div className="text-sm text-muted-foreground">
+                          #{index + 1} by GDP
+                        </div>
                       </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-8">
-                    <div className="text-right">
-                      <div className="font-semibold">${item.price.toFixed(2)}</div>
-                      <div className={`text-sm ${item.change >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                        {item.change >= 0 ? '+' : ''}{item.change}%
-                      </div>
+                    <div className="text-right hidden sm:block">
+                      <div className="text-sm text-muted-foreground">Index Symbol</div>
+                      <div className="font-medium text-primary">{item.symbol}</div>
                     </div>
-                    <div className="text-right hidden md:block">
-                      <div className="text-sm text-muted-foreground">Volume</div>
-                      <div className="font-medium">{item.volume}</div>
+                    <div className="text-right hidden sm:block">
+                      <div className="text-sm text-muted-foreground">GDP Rank</div>
+                      <div className="font-medium">#{index + 1}</div>
                     </div>
-                    <div className="text-right hidden lg:block">
-                      <div className="text-sm text-muted-foreground">Market Cap</div>
-                      <div className="font-medium">{item.marketCap}</div>
-                    </div>
-                    <Button variant="outline" size="sm">
-                      Trade
+                    <Button variant="outline" size="sm" onClick={(e) => {
+                      e.stopPropagation()
+                      handleCountryClick(item.symbol)
+                    }}>
+                      View Details
                     </Button>
                   </div>
                 </div>
